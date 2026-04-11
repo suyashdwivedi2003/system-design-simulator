@@ -17,9 +17,13 @@ await publisher.connect();
 console.log("✅ Redis connected (worker)");
 
 // ── Bull worker Redis connection ──────────────────────────────────
+const redisUrl = new URL(process.env.REDIS_URL || "redis://localhost:6379");
+
 const REDIS_CONNECTION = {
-  host: process.env.REDIS_HOST || "localhost",
-  port: parseInt(process.env.REDIS_PORT || "6379"),
+  host:     redisUrl.hostname,
+  port:     parseInt(redisUrl.port) || 6379,
+  password: redisUrl.password || undefined,
+  username: redisUrl.username || undefined,
 };
 
 const TOTAL_TICKS   = 60;

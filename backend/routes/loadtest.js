@@ -19,10 +19,15 @@ const router = express.Router();
 // ── Bull Queue ────────────────────────────────────────────────────
 // This is the PRODUCER side — it adds jobs to the queue.
 // The CONSUMER (worker) is in workers/loadTestWorker.js
+// Parse Redis URL for BullMQ
+const redisUrl = new URL(process.env.REDIS_URL || "redis://localhost:6379");
+
 const loadTestQueue = new Queue("load-tests", {
   connection: {
-    host: process.env.REDIS_HOST || "localhost",
-    port: parseInt(process.env.REDIS_PORT || "6379"),
+    host:     redisUrl.hostname,
+    port:     parseInt(redisUrl.port) || 6379,
+    password: redisUrl.password || undefined,
+    username: redisUrl.username || undefined,
   },
   defaultJobOptions: {
     attempts:    3,           // retry up to 3 times if it fails
